@@ -6,4 +6,4 @@ _REPO=centos
 _UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
 _SYNCEVERY=43200
 _FAILRETRY=900
-
+_FAILRETRIES=4

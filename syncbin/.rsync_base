@@ -18,8 +18,19 @@ _get_upstream () {
 _get_next_sync_time () {
     _CURTIME=$(date +%s)
     _DELTA=$_SYNCEVERY
-    [ -f $MIRRORROOT/$_REPO/Archive-Update-in-Pro* ] && _DELTA=$_FAILRETRY
-    [ "$LASTSTATUS" -eq "failed" ] && _DELTA=$_FAILRETRY
+    ls $MIRRORROOT/$_REPO/Archive-Update-in-Pro* &>/dev/null && _DELTA=$_FAILRETRY
+    if [ "$LASTSTATUS" == "failed" ]; then
+        OLD=$(kvdb_local_get failure_times)
+        if [ "$?" -gt "0" ]; then
+            OLD=0
+        fi
+        if [ "$OLD" -lt "$_FAILRETRIES" ]; then
+            kvdb_local_set failure_times $((OLD+1))
+            _DELTA=$_FAILRETRY
+        else
+            kvdb_local_set failure_times 0
+        fi
+    fi
     echo $(( $_CURTIME + $_DELTA ))
 }
 

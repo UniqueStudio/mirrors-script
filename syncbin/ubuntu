@@ -6,4 +6,5 @@ _REPO=ubuntu
 _UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
 _SYNCEVERY=28800
 _FAILRETRY=900
+_FAILRETRIES=4
 
