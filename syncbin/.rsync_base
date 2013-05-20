@@ -30,6 +30,8 @@ _get_next_sync_time () {
         else
             kvdb_local_set failure_times 0
         fi
+    else
+            kvdb_local_set failure_times 0
     fi
     echo $(( $_CURTIME + $_DELTA ))
 }
