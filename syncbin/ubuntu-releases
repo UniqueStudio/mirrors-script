@@ -1,0 +1,29 @@
+#!/bin/bash
+
+_REPO=ubuntu-releases
+_UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
+
+_sync () {
+    mkdir -p $MIRRORROOT/$_REPO
+    cd $MIRRORROOT/$_REPO
+    rsync $_UPSTREAM . -avh --delete --delete-after --stats --safe-links
+    RETVAL=$?
+    cd $OWD
+    return $RETVAL
+}
+
+_get_upstream () {
+    echo $_UPSTREAM
+}
+
+_get_next_sync_time () {
+    _CURTIME=$(date +%s)
+    _DELTA=28800
+    [ -f $MIRRORROOT/$_REPO/Archive-Update-* ] && _DELTA=1800
+    echo $(( $_CURTIME + $_DELTA ))
+}
+
+_get_size () {
+    _STDOUT=$LOGROOT/$_REPO/log.stdout
+    tail -n1 $_STDOUT | cut -d' ' -f4
+}

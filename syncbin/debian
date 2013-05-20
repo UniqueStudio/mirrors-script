@@ -1,0 +1,41 @@
+#!/bin/bash
+
+_REPO=debian
+_UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
+
+_sync () {
+    mkdir -p $MIRRORROOT/$_REPO
+    cd $MIRRORROOT/$_REPO
+    rsync $_UPSTREAM . -avh --exclude Packages* --exclude Sources* --exclude Release* --exclude InRelease --exclude i18n/* --exclude ls-lR* --links --safe-links --stats --hard-links
+    RETVAL=$?
+    if [ "$RETVAL" -eq "0" ]; then
+        rsync $UPSTREAM . -avh --delete --delete-after --links --safe-links --stats --times --hard-links
+        RETVAL=$?
+        if [ "$RETVAL" -eq "0" ]; then
+            if [ -d project/trace ] ; then
+                date -u > project/trace/mirrors.hustunique.com
+                echo 'Running on host: mirrors.hustunique.com' >> project/trace/mirrors.hustunique.com
+                echo 'Architectures: GUESSED:{ source amd64 armel armhf hurd-i386 i386 ia64 kfreebsd-amd64 kfreebsd-i386 mips mipsel powerpc s390 s390x sparc}' >> project/trace/mirrors.hustunique.com
+                echo 'Upstream-mirror: ftp.cn.debian.org' >> project/trace/mirrors.hustunique.com
+            fi
+        fi
+    fi
+    cd $OWD
+    return $RETVAL
+}
+
+_get_upstream () {
+    echo $_UPSTREAM
+}
+
+_get_next_sync_time () {
+    _CURTIME=$(date +%s)
+    _DELTA=86400
+    [ -f $MIRRORROOT/$_REPO/Archive-Update-* ] && _DELTA=1800
+    echo $(( $_CURTIME + $_DELTA ))
+}
+
+_get_size () {
+    _STDOUT=$LOGROOT/$_REPO/log.stdout
+    tail -n1 $_STDOUT | cut -d' ' -f4
+}
