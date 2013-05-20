@@ -1,8 +1,65 @@
 #!/bin/bash
 
-source "$SCRIPTROOT/syncbin/$1"
 
 SERVERNAME=$(hostname --fqdn)
+
+function kvdb_global_get_file_name {
+    DBF="$KVDBROOT/global.kc"
+    if [ ! -f "$DBF" ]; then
+        kchashmgr create "$DBF" 2>/dev/null
+    fi
+    echo "$DBF"
+}
+
+function kvdb_local_get_file_name {
+    DBF="$KVDBROOT/local.$DISTRO.kc"
+    if [ ! -f "DBF" ]; then
+        kchashmgr create "$DBF" 2>/dev/null
+    fi
+    echo "$DBF"
+}
+
+function kvdb_global_get {
+    DBF=$(kvdb_global_get_file_name)
+    kchashmgr get "$DBF" "$1" 2>/dev/null
+}
+
+function kvdb_global_set {
+    DBF=$(kvdb_global_get_file_name)
+    kchashmgr set "$DBF" "$1" "$2" 2>/dev/null
+}
+
+function kvdb_global_remove {
+    DBF=$(kvdb_global_get_file_name)
+    kchashmgr remove "$DBF" "$1" 2>/dev/null
+}
+
+function kvdb_global_clear {
+    DBF=$(kvdb_global_get_file_name)
+    kchashmgr clear "$DBF" 2>/dev/null
+}
+
+function kvdb_local_get {
+    DBF=$(kvdb_local_get_file_name)
+    kchashmgr get "$DBF" "$1" 2>/dev/null
+}
+
+function kvdb_local_set {
+    DBF=$(kvdb_local_get_file_name)
+    kchashmgr set "$DBF" "$1" "$2" 2>/dev/null
+}
+
+function kvdb_local_remove {
+    DBF=$(kvdb_local_get_file_name)
+    kchashmgr remove "$DBF" "$1" 2>/dev/null
+}
+
+function kvdb_local_clear {
+    DBF=$(kvdb_local_get_file_name)
+    kchashmgr clear "$DBF" 2>/dev/null
+}
+
+source "$SCRIPTROOT/syncbin/$1"
 
 SIZE=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "size" in p and p["size"] or -1')
 LASTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "lastsync" in p and p["lastsync"] or -1')

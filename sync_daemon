@@ -6,7 +6,8 @@ export MIRRORROOT=/home/mirror/mirrordata
 export LOGROOT=/home/mirror/mirrorlog
 export STATUSROOT=/home/mirror/mirrorweb/status/
 export SCRIPTROOT=/home/mirror/scripts
-export KVDIR=/home/mirror/statuskv
+export KVDBROOT=/home/mirror/statuskv
+export DISTRO=$1
 
 NOW=$(date +%s)
 NEXT=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
