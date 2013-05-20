@@ -1,0 +1,46 @@
+#!/bin/bash
+
+source "$SCRIPTROOT/syncbin/$1"
+
+SERVERNAME=$(hostname --fqdn)
+
+SIZE=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "size" in p and p["size"] or -1')
+LASTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "lastsync" in p and p["lastsync"] or -1')
+NEXTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
+LASTSTATUS=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "status" in p and p["status"] or -1')
+UPSTREAM=$(_get_upstream)
+
+python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status syncing lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
+
+
+if [ ! -d "$LOGROOT/$1" ]; then
+    mkdir -p "$LOGROOT/$1"
+fi
+
+for ((i=13;i>=0;i--)); do
+    j=$((i+1))
+    mv "$LOGROOT/$1/log.stdout.$i" "$LOGROOT/$1/log.stdout.$j" 2>/dev/null
+    mv "$LOGROOT/$1/log.stderr.$i" "$LOGROOT/$1/log.stderr.$j" 2>/dev/null
+done
+mv "$LOGROOT/$1/log.stdout" "$LOGROOT/$1/log.stdout.0"
+mv "$LOGROOT/$1/log.stderr" "$LOGROOT/$1/log.stderr.0"
+
+
+date -u > "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
+
+if _sync >"$LOGROOT/$1/log.stdout" 2>"$LOGROOT/$1/log.stderr"; then
+    if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
+    	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
+    fi
+    SIZE=$(_get_size)
+    NEXTSYNC=$(_get_next_sync_time)
+    LASTSYNC=$(python -c 'import time;print int(time.time())')
+    python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status success lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
+else
+    if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
+    	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
+    fi
+    NEXTSYNC=$(_get_next_sync_time)
+    python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status failed lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
+fi
+
