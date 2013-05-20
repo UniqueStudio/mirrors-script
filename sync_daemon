@@ -8,7 +8,7 @@ export STATUSROOT=/home/mirror/mirrorweb/status/
 export SCRIPTROOT=/home/mirror/scripts
 
 NOW=$(date +%s)
-NEXT=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "lastsync" in p and p["nextsync"] or -1')
+NEXT=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
 if [ "${NEXT}1" -gt "${NOW}1" ]; then
 	WAIT=$((NEXT-NOW))
 	sleep $WAIT
@@ -16,7 +16,7 @@ fi
 
 while true; do
     ./sync_core $1 >/dev/null 2>/dev/null
-    NEXTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "lastsync" in p and p["nextsync"] or -1')
+    NEXTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
     NOW=`date +%s`
     SLEEPTIME=$((NEXTSYNC-NOW))
     if [ "$SLEEPTIME" -le "0" ]; then
