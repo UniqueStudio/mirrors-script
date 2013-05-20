@@ -6,6 +6,7 @@ export MIRRORROOT=/home/mirror/mirrordata
 export LOGROOT=/home/mirror/mirrorlog
 export STATUSROOT=/home/mirror/mirrorweb/status/
 export SCRIPTROOT=/home/mirror/scripts
+export KVDIR=/home/mirror/statuskv
 
 NOW=$(date +%s)
 NEXT=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
@@ -15,7 +16,12 @@ if [ "${NEXT}1" -gt "${NOW}1" ]; then
 fi
 
 while true; do
-    ./sync_core $1 >/dev/null 2>/dev/null
+    for ((i=13;i>=0;i--)); do 
+        j=$((i+1))
+        mv "$LOGROOT/$1/sync_core.log.$i" "$LOGROOT/$1/sync_core.log.$j"
+    done
+    mv "$LOGROOT/$1/sync_core.log" "$LOGROOT/$1/sync_core.log.0"
+    bash -x ./sync_core $1 >& "$LOGROOT/$1/sync_core.log"
     NEXTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
     NOW=`date +%s`
     SLEEPTIME=$((NEXTSYNC-NOW))
