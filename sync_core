@@ -86,6 +86,7 @@ mv "$LOGROOT/$1/log.stderr" "$LOGROOT/$1/log.stderr.0"
 date -u > "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
 
 if _sync >"$LOGROOT/$1/log.stdout" 2>"$LOGROOT/$1/log.stderr"; then
+    LASTSTATUS=success
     if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
     	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
     fi
@@ -94,6 +95,7 @@ if _sync >"$LOGROOT/$1/log.stdout" 2>"$LOGROOT/$1/log.stderr"; then
     LASTSYNC=$(python -c 'import time;print int(time.time())')
     python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status success lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 else
+    LASTSTATUS=failed
     if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
     	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
     fi
