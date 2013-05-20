@@ -1,0 +1,29 @@
+#!/bin/bash
+
+_RSYNC_ARGS="-avh --delete --delete-after --stats --safe-links"
+
+_sync () {
+    mkdir -p $MIRRORROOT/$_REPO
+    cd $MIRRORROOT/$_REPO
+    rsync $_UPSTREAM . $_RSYNC_ARGS
+    RETVAL=$?
+    cd $OWD
+    return $RETVAL
+}
+
+_get_upstream () {
+    echo $_UPSTREAM
+}
+
+_get_next_sync_time () {
+    _CURTIME=$(date +%s)
+    _DELTA=$_SYNCEVERY
+    [ -f $MIRRORROOT/$_REPO/Archive-Update-in-Pro* ] && _DELTA=$_FAILRETRY
+    [ "$LASTSTATUS" -eq "failed" ] && _DELTA=$_FAILRETRY
+    echo $(( $_CURTIME + $_DELTA ))
+}
+
+_get_size () {
+    _STDOUT=$LOGROOT/$_REPO/log.stdout
+    tail -n1 $_STDOUT | cut -d' ' -f4
+}

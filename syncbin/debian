@@ -1,7 +1,11 @@
 #!/bin/bash
 
+source $SCRIPTROOT/syncbin/.rsync_base
+
 _REPO=debian
 _UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
+_SYNCEVERY=28800
+_FAILRETRY=900
 
 _sync () {
     mkdir -p $MIRRORROOT/$_REPO
@@ -24,18 +28,3 @@ _sync () {
     return $RETVAL
 }
 
-_get_upstream () {
-    echo $_UPSTREAM
-}
-
-_get_next_sync_time () {
-    _CURTIME=$(date +%s)
-    _DELTA=86400
-    [ -f $MIRRORROOT/$_REPO/Archive-Update-* ] && _DELTA=1800
-    echo $(( $_CURTIME + $_DELTA ))
-}
-
-_get_size () {
-    _STDOUT=$LOGROOT/$_REPO/log.stdout
-    tail -n1 $_STDOUT | cut -d' ' -f4
-}
