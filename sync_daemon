@@ -9,6 +9,9 @@ export SCRIPTROOT=/home/mirror/scripts
 export KVDBROOT=/home/mirror/statuskv
 export DISTRO=$1
 
+mkdir -p "$MIRRORROOT/$1"
+mkdir -p "$LOGROOT/$1"
+
 NOW=$(date +%s)
 NEXT=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
 if [ "${NEXT}1" -gt "${NOW}1" ]; then
