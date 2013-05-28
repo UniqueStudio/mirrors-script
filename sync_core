@@ -92,7 +92,7 @@ if _sync >"$LOGROOT/$1/log.stdout" 2>"$LOGROOT/$1/log.stderr"; then
     fi
     SIZE=$(_get_size)
     NEXTSYNC=$(_get_next_sync_time)
-    LASTSYNC=$(python -c 'import time;print int(time.time())')
+    LASTSYNC=$(date +%s)
     python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status success lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 else
     LASTSTATUS=failed
