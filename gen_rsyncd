@@ -3,6 +3,8 @@ MIRRORDATA="/home/mirror/mirrordata"
 cp rsyncd.conf.header rsyncd.conf
 for i in `ls $MIRRORDATA/`; do
     echo "[$i]" >> rsyncd.conf
-    echo "path=$MIRRORDATA/$i" >> rsyncd.conf
+    echo "path = $MIRRORDATA/$i" >> rsyncd.conf
+    SIZE=$( cat /home/mirror/mirrorweb/status/${i}.json | egrep -o '"[0-9.]+[TKMG]"' | tr -d '"' )
+    echo "comment = size: $SIZE" >> rsyncd.conf
     echo >> rsyncd.conf
 done
