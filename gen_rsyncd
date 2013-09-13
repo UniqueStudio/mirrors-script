@@ -1,6 +1,7 @@
 #!/bin/bash
 MIRRORDATA="/home/mirror/mirrordata"
-cp rsyncd.conf.header rsyncd.conf
+echo -e "# This file will be overwritten by gen_rsyncd script.\n# Do NOT modify by hand." > rsyncd.conf
+cat rsyncd.conf.header >> rsyncd.conf
 for i in `ls $MIRRORDATA/`; do
     echo "[$i]" >> rsyncd.conf
     echo "path = $MIRRORDATA/$i" >> rsyncd.conf
