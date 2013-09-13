@@ -2,8 +2,9 @@
 
 source $SCRIPTROOT/syncbin/.rsync_base
 
-_REPO=centos
-_UPSTREAM=rsync://mirrors.kernel.org/$_REPO/
+_REPO=linuxmint-cd
+_UPSTREAM=rsync://ftp.heanet.ie/pub/linuxmint.com/
 _SYNCEVERY=7200
 _FAILRETRY=600
 _FAILRETRIES=4
+

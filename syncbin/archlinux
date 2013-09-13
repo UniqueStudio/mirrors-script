@@ -3,7 +3,8 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=archlinux
-_UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
+_UPSTREAM=rsync://ftp.jaist.ac.jp/pub/Linux/ArchLinux/
 _SYNCEVERY=7200
-_FAILRETRY=900
+_FAILRETRY=300
 _FAILRETRIES=4
+

@@ -2,9 +2,8 @@
 
 source $SCRIPTROOT/syncbin/.rsync_base
 
-_REPO=deepin
-_UPSTREAM=rsync://packages.linuxdeepin.com/packages/
+_REPO=CTAN
+_UPSTREAM=rsync://rsync.dante.ctan.org/CTAN/
 _SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
-

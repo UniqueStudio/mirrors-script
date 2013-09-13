@@ -2,9 +2,9 @@
 
 source $SCRIPTROOT/syncbin/.rsync_base
 
-_REPO=deepin
-_UPSTREAM=rsync://packages.linuxdeepin.com/packages/
-_SYNCEVERY=28800
+_REPO=kali
+_UPSTREAM=rsync://kali.mirror.garr.it/$_REPO/
+_SYNCEVERY=7200
 _FAILRETRY=600
 _FAILRETRIES=4
 

@@ -3,8 +3,30 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=ubuntu
-_UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
-_SYNCEVERY=28800
-_FAILRETRY=900
+__UPSTREAM=archive.ubuntu.com
+_UPSTREAM=rsync://$__UPSTREAM/ubuntu/
+_SYNCEVERY=7200
+_FAILRETRY=600
 _FAILRETRIES=4
+
+_sync () {
+    mkdir -p $MIRRORROOT/$_REPO
+    cd $MIRRORROOT/$_REPO
+    rsync $_UPSTREAM . -aHvh --exclude Packages* --exclude Sources* --exclude Release* --exclude InRelease --exclude i18n/* --exclude ls-lR* --links --safe-links --stats --hard-links --delay-updates
+    RETVAL=$?
+    if [ "$RETVAL" -eq "0" ]; then
+        rsync $_UPSTREAM . -aHvh --delete --delete-delay --links --safe-links --stats --times --hard-links --delay-updates
+        RETVAL=$?
+        if [ "$RETVAL" -eq "0" ]; then
+            if [ -d project/trace ] ; then
+                date -u > project/trace/mirrors.hustunique.com
+                echo 'Running on host: mirrors.hustunique.com' >> project/trace/mirrors.hustunique.com
+                echo 'Architectures: GUESSED:{ source amd64 armel armhf hurd-i386 i386 ia64 kfreebsd-amd64 kfreebsd-i386 mips mipsel powerpc s390 s390x sparc}' >> project/trace/mirrors.hustunique.com
+                echo "Upstream-mirror: $__UPSTREAM" >> project/trace/mirrors.hustunique.com
+            fi
+        fi
+    fi
+    cd $OWD
+    return $RETVAL
+}
 

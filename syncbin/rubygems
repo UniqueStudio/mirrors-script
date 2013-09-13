@@ -1,0 +1,39 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_sync() {
+    HOME=/home/mirror
+    gem mirror
+    HOME=/root
+    RETVAL=$?
+    cd $OWD
+    return $RETVAL
+}
+
+_get_upstream() {
+    echo "https://production.cf.rubygems.org/"
+}
+
+_get_next_sync_time() {
+    _CURTIME=`date +%s`
+    _DELTA=900
+    echo $(( $_CURTIME + $_DELTA ))
+}
+
+_get_size() {
+    OLD=$(kvdb_local_get last_du_time)
+    if [ "0$OLD" -eq "0" ]; then
+        OLD=0
+    fi
+    NOW=`date +%s`
+    let P=NOW-OLD
+    if [ "$P" -lt "86400" ]; then
+        kvdb_local_get last_du_value
+    else
+        NSIZE=`du "$MIRRORROOT/rubygems" -sh | awk '{ print $1; }'`
+        kvdb_local_set last_du_value "$NSIZE"
+        kvdb_local_set last_du_time "$NOW"
+        echo "$NSIZE"
+    fi
+}

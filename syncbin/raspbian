@@ -3,8 +3,8 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=raspbian
-_UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
+_UPSTREAM=rsync://archive.raspbian.org/archive/
 _SYNCEVERY=28800
-_FAILRETRY=900
+_FAILRETRY=600
 _FAILRETRIES=4
 

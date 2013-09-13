@@ -2,9 +2,9 @@
 
 source $SCRIPTROOT/syncbin/.rsync_base
 
-_REPO=deepin
-_UPSTREAM=rsync://packages.linuxdeepin.com/packages/
-_SYNCEVERY=28800
+_REPO=gentoo-portage
+_UPSTREAM=rsync://rsync.cn.gentoo.org/$_REPO/
+_SYNCEVERY=14400
 _FAILRETRY=600
 _FAILRETRIES=4
 

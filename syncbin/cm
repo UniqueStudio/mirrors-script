@@ -1,0 +1,18 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_REPO=cm
+_UPSTREAM=rsync://download.cyanogenmod.org/mirror/
+_SYNCEVERY=7200
+_FAILRETRY=600
+_FAILRETRIES=4
+
+_post_sync() {
+    cd "$MIRRORROOT/cm/"
+    for i in $(find . -name '*.zip' -type f -printf '%T@ %p\n' | sort -k 1nr | sed 's/^[^ ]* //' ); do
+        printf '<a href="%s">%s</a><br/>\n' "$i" $(echo $i | sed -e 's/.*\/\([^\/]\)/\1/g') >> "index.new.html"
+    done
+    mv index.new.html index.html
+    cd -
+}

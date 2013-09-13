@@ -1,14 +1,26 @@
 #!/bin/bash
 
-_RSYNC_ARGS="-avh --delete --delete-after --stats --safe-links"
+# This file should be source'd ***BEFORE*** anything in sync scripts!
+# 
+# The following functions and variables can be overridden in order to support
+# different syncing requirements.
+
+_RSYNC_ARGS="-aHvh --delete --delete-delay --stats --safe-links --timeout=120 --contimeout=60 --delay-updates"
 
 _sync () {
     mkdir -p $MIRRORROOT/$_REPO
     cd $MIRRORROOT/$_REPO
+    if [[ $? != 0 ]]; then
+        return 1
+    fi
     rsync $_UPSTREAM . $_RSYNC_ARGS
     RETVAL=$?
     cd $OWD
     return $RETVAL
+}
+
+_post_sync () {
+    return 0; # This is a stub
 }
 
 _get_upstream () {
@@ -18,6 +30,7 @@ _get_upstream () {
 _get_next_sync_time () {
     _CURTIME=$(date +%s)
     _DELTA=$_SYNCEVERY
+    _DELTA=$( echo $((_DELTA + RANDOM % 5400 - 3600)) 1800 | xargs python -c 'import sys;print max(int(sys.argv[1]), int(sys.argv[2]))' )
     ls $MIRRORROOT/$_REPO/Archive-Update-in-Pro* &>/dev/null && _DELTA=$_FAILRETRY
     if [ "$LASTSTATUS" == "failed" ]; then
         OLD=$(kvdb_local_get failure_times)

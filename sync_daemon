@@ -2,9 +2,11 @@
 
 cd $(dirname $0)
 export CWD=$(pwd)
+export OWD=$(pwd)
 export MIRRORROOT=/home/mirror/mirrordata
 export LOGROOT=/home/mirror/mirrorlog
 export STATUSROOT=/home/mirror/mirrorweb/status/
+export WEBROOT=/home/mirror/mirrorweb
 export SCRIPTROOT=/home/mirror/scripts
 export KVDBROOT=/home/mirror/statuskv
 export DISTRO=$1

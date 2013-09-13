@@ -1,0 +1,8 @@
+#!/bin/bash
+MIRRORDATA="/home/mirror/mirrordata"
+cp rsyncd.conf.header rsyncd.conf
+for i in `ls $MIRRORDATA/`; do
+    echo "[$i]" >> rsyncd.conf
+    echo "path=$MIRRORDATA/$i" >> rsyncd.conf
+    echo >> rsyncd.conf
+done

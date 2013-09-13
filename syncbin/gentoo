@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_REPO=gentoo
+_UPSTREAM=rsync://rsync.cn.gentoo.org/$_REPO/
+_SYNCEVERY=14400
+_FAILRETRY=600
+_FAILRETRIES=4
+_RSYNC_ARGS="$_RSYNC_ARGS --exclude releases/.test/THIS-FILE-SHOULD-NOT-BE-PUBLIC.txt --exclude distfiles/.~tmp~"

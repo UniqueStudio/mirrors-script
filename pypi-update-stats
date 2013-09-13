@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# This command should be run as root because nginx logs are not
+# readable by mirror. This should be fixed.
+bandersnatch update-stats
+
+# Fix permissions
+chown mirror:mirror -R "/home/mirror/mirrordata/pypi/web/local-stats/"

@@ -3,8 +3,8 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=deepin-cd
-_UPSTREAM=rsync://mirrors.ustc.edu.cn/$_REPO
-_SYNCEVERY=28800
-_FAILRETRY=900
+_UPSTREAM=rsync://cdimage.linuxdeepin.com/cdimage/
+_SYNCEVERY=7200
+_FAILRETRY=600
 _FAILRETRIES=3
 

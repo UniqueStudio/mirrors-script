@@ -1,0 +1,15 @@
+motd file = /home/mirror/scripts/rsyncd.motd
+pid file = /var/run/rsyncd.pid
+lock file = /var/run/rsyncd.lock
+log file = /var/log/rsyncd/rsyncd.log
+transfer logging = no
+max verbosity = yes
+transfer logging = yes
+ignore noreadable = yes
+uid = nobody
+gid = nogroup
+use chroot = yes
+dont compress = *.tar *.ova *.dmg *.pkg *.gz *.tgz *.zip *.z *.xz *.rpm *.deb *.bz2 *.tbz *.lzma *.7z *.rar *.iso
+refuse options = checksum dry-run
+read only = true
+

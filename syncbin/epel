@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_REPO=epel
+_UPSTREAM=rsync://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/
+_SYNCEVERY=14400
+_FAILRETRY=600
+_FAILRETRIES=4
+
+_post_sync () {
+    $SCRIPTROOT/report_mirror -c "$SCRIPTROOT/report_mirror.conf"
+}

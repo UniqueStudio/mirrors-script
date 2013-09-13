@@ -4,6 +4,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=cygwin
 _UPSTREAM=rsync://sourceware.org/cygwin-ftp/
-_SYNCEVERY=28800
-_FAILRETRY=900
+_SYNCEVERY=7200
+_FAILRETRY=600
 _FAILRETRIES=4
+
