@@ -1,3 +1,4 @@
 *.sw[op]
 report_mirror.conf
 handle_user_requested
+rsyncd.conf
