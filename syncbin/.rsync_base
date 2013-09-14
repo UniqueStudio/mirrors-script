@@ -27,11 +27,17 @@ _get_upstream () {
     echo $_UPSTREAM
 }
 
+_is_intermediate_upstream () {
+    ! ls $MIRRORROOT/$_REPO/Archive-Update-in-Pro* &>/dev/null
+}
+
 _get_next_sync_time () {
     _CURTIME=$(date +%s)
     _DELTA=$_SYNCEVERY
     _DELTA=$( echo $((_DELTA + RANDOM % 5400 - 3600)) 1800 | xargs python -c 'import sys;print max(int(sys.argv[1]), int(sys.argv[2]))' )
-    ls $MIRRORROOT/$_REPO/Archive-Update-in-Pro* &>/dev/null && _DELTA=$_FAILRETRY
+    if _is_intermediate_upstream &>/dev/null; then
+        _DELTA=$_FAILRETRY
+    fi
     if [ "$LASTSTATUS" == "failed" ]; then
         OLD=$(kvdb_local_get failure_times)
         if [ "$?" -gt "0" ]; then
