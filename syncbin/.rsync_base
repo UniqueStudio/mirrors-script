@@ -27,15 +27,16 @@ _get_upstream () {
     echo $_UPSTREAM
 }
 
-_is_intermediate_upstream () {
-    ! ls $MIRRORROOT/$_REPO/Archive-Update-in-Pro* &>/dev/null
+_upstream_inconsistent () {
+    ls $MIRRORROOT/$_REPO/Archive-Update-in-Pro* &>/dev/null
+    return $?
 }
 
 _get_next_sync_time () {
     _CURTIME=$(date +%s)
     _DELTA=$_SYNCEVERY
     _DELTA=$( echo $((_DELTA + RANDOM % 5400 - 3600)) 1800 | xargs python -c 'import sys;print max(int(sys.argv[1]), int(sys.argv[2]))' )
-    if _is_intermediate_upstream &>/dev/null; then
+    if _upstream_inconsistent &>/dev/null; then
         _DELTA=$_FAILRETRY
     fi
     if [ "$LASTSTATUS" == "failed" ]; then
