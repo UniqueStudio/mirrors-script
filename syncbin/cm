@@ -11,3 +11,7 @@ _FAILRETRIES=4
 _post_sync() {
     $SCRIPTROOT/cm_dir_index
 }
+
+_upstream_inconsistent() {
+    curl -s "http://jenkins.cyanogenmod.org/job/android/lastBuild/api/json?tree=building" | python -c 'import sys,json; exit(int(not json.load(sys.stdin)["building"]))'
+}
