@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_REPO=mariadb
+_UPSTREAM=rsync://rsync.osuosl.org/$_REPO/
+_SYNCEVERY=43200
+_FAILRETRY=600
+_FAILRETRIES=4
+_RSYNC_ARGS="$_RSYNC_ARGS --partial"
