@@ -4,7 +4,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=ubuntu-releases
 _UPSTREAM=rsync://rsync.releases.ubuntu.com/releases/
-_SYNCEVERY=7200
+_SYNCEVERY=43200
 _FAILRETRY=600
 _FAILRETIRES=4
 

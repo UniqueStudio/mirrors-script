@@ -2,8 +2,9 @@
 
 source $SCRIPTROOT/syncbin/.rsync_base
 
-_REPO=centos
-_UPSTREAM=rsync://mirrors.kernel.org/$_REPO/
+_REPO=eclipse
+_UPSTREAM=rsync://rsync.gtlib.gatech.edu/eclipse/
 _SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
+

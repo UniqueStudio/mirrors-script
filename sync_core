@@ -2,7 +2,7 @@
 
 SERVERNAME=$( hostname --fqdn ) # added a space before `)' to fix vim syntax highlighting issue
 
-function kvdb_global_get_file_name {
+function kvdb_global_get_file_name() {
     DBF="$KVDBROOT/global.kc"
     if [ ! -f "$DBF" ]; then
         kchashmgr create "$DBF" 2>/dev/null
@@ -10,7 +10,7 @@ function kvdb_global_get_file_name {
     echo "$DBF"
 }
 
-function kvdb_local_get_file_name {
+function kvdb_local_get_file_name() {
     DBF="$KVDBROOT/local.$DISTRO.kc"
     if [ ! -f "DBF" ]; then
         kchashmgr create "$DBF" 2>/dev/null
@@ -18,47 +18,49 @@ function kvdb_local_get_file_name {
     echo "$DBF"
 }
 
-function kvdb_global_get {
+function kvdb_global_get() {
     DBF=$(kvdb_global_get_file_name)
     kchashmgr get "$DBF" "$1" 2>/dev/null
 }
 
-function kvdb_global_set {
+function kvdb_global_set() {
     DBF=$(kvdb_global_get_file_name)
     kchashmgr set "$DBF" "$1" "$2" 2>/dev/null
 }
 
-function kvdb_global_remove {
+function kvdb_global_remove() {
     DBF=$(kvdb_global_get_file_name)
     kchashmgr remove "$DBF" "$1" 2>/dev/null
 }
 
-function kvdb_global_clear {
+function kvdb_global_clear() {
     DBF=$(kvdb_global_get_file_name)
     kchashmgr clear "$DBF" 2>/dev/null
 }
 
-function kvdb_local_get {
+function kvdb_local_get() {
     DBF=$(kvdb_local_get_file_name)
     kchashmgr get "$DBF" "$1" 2>/dev/null
 }
 
-function kvdb_local_set {
+function kvdb_local_set() {
     DBF=$(kvdb_local_get_file_name)
     kchashmgr set "$DBF" "$1" "$2" 2>/dev/null
 }
 
-function kvdb_local_remove {
+function kvdb_local_remove() {
     DBF=$(kvdb_local_get_file_name)
     kchashmgr remove "$DBF" "$1" 2>/dev/null
 }
 
-function kvdb_local_clear {
+function kvdb_local_clear() {
     DBF=$(kvdb_local_get_file_name)
     kchashmgr clear "$DBF" 2>/dev/null
 }
 
 source "$SCRIPTROOT/syncbin/$1"
+
+GenJSON='import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))'
 
 SIZE=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "size" in p and p["size"] or -1')
 LASTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "lastsync" in p and p["lastsync"] or -1')
@@ -66,7 +68,7 @@ NEXTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_i
 LASTSTATUS=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "status" in p and p["status"] or -1')
 UPSTREAM=$(_get_upstream)
 
-python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status syncing lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
+python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status syncing lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 
 
 if [ ! -d "$LOGROOT/$1" ]; then
@@ -86,9 +88,11 @@ mv "$LOGROOT/$1/log.outerr" "$LOGROOT/$1/log.outerr.0"
 
 date -u > "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}";
 
-set -e # Fail immediately if error occurs
+_sync > >(tee -a "$LOGROOT/$1/log.outerr" > "$LOGROOT/$1/log.stdout") 2> >(tee -a "$LOGROOT/$1/log.outerr" > "$LOGROOT/$1/log.stderr")
 
-if _sync > >(tee -a "$LOGROOT/$1/log.outerr" > "$LOGROOT/$1/log.stdout" ) 2> >(tee -a "$LOGROOT/$1/log.outerr" > "$LOGROOT/$1/log.stderr"); then
+RETVAL=$?
+
+if [[ $RETVAL == 0 || $RETVAL == 23 ]]; then
     LASTSTATUS=success
     if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
         rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
@@ -96,14 +100,21 @@ if _sync > >(tee -a "$LOGROOT/$1/log.outerr" > "$LOGROOT/$1/log.stdout" ) 2> >(t
     SIZE=$(_get_size)
     NEXTSYNC=$(_get_next_sync_time)
     LASTSYNC=$(date +%s)
-    python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status success lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
+    python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status success lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
     _post_sync > >(tee -a "$LOGROOT/$1/log.outerr" >> "$LOGROOT/$1/log.stdout" ) 2> >(tee -a "$LOGROOT/$1/log.outerr" >> "$LOGROOT/$1/log.stderr")
+elif [[ $RETVAL == 5 ]]; then
+    LASTSTATUS=failed
+    if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
+    	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
+    fi
+    NEXTSYNC=$(_get_next_sync_time)
+    python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status success lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 else
     LASTSTATUS=failed
     if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
     	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
     fi
     NEXTSYNC=$(_get_next_sync_time)
-    python -c 'import json;from itertools import izip;import sys;i=iter(sys.argv[1:]);print json.dumps(dict(izip(i,i)))' upstream "$UPSTREAM" size "$SIZE" status failed lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
+    python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status failed lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 fi
 

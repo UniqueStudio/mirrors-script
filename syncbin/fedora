@@ -4,10 +4,10 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=fedora
 _UPSTREAM=rsync://dl.fedoraproject.org/fedora-enchilada/linux/
-_SYNCEVERY=14400
+_SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
 
 _post_sync () {
-    $SCRIPTROOT/report_mirror -c "$SCRIPTROOT/report_mirror.conf"
+    $SCRIPTROOT/report_mirror -c "$SCRIPTROOT/fedora.conf"
 }

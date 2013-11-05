@@ -3,7 +3,7 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=CTAN
-_UPSTREAM=rsync://rsync.dante.ctan.org/CTAN/
+_UPSTREAM=rsync://rsync.tex.ac.uk/CTAN/
 _SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4

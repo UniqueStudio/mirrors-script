@@ -3,7 +3,7 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=debian-cd
-_UPSTREAM=rsync://ftp2.de.debian.org/$_REPO/
+_UPSTREAM=rsync://ftp2.jp.debian.org/$_REPO/
 _SYNCEVERY=7200
 _FAILRETRY=600
 _FAILRETRIES=3

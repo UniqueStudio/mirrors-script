@@ -62,11 +62,15 @@ HEADER="""
 				<div class="centerblock">
 					<h1 data-localize="title">CyanogenMod Directory Index</h1>
 					<p class="lead">Tip: Use Ctrl-F to search for your device.</p>
+"""
+TABLE_HEADER="""
 					<table class="table">
 						<tr><th>Build type</th><th>File name</th><th>CM Version</th><th>Device codename</th></tr>
 """
+TABLE_FOOTER = """
+					</table>"""
+
 FOOTER="""
-					</table>
 				</div>
 			</div>
 			<div id="push"></div>
@@ -94,46 +98,77 @@ FOOTER="""
 
 CMROOT="/home/mirror/mirrordata/cm/"
 
-def generate_directory_index():
+def parse_filename(f):
+    info = {'cmver': '???', 'device': '???', 'name':'', 'path':'', 'type': 'Stable', 'changelog': ''}
+    r = f.split('/')[-1][:-4]
+    d = r
+    if r.endswith('-signed'):
+        r = r[:-7]
+    if r.startswith('update-'):
+        r = r[7:]
+    info['path'] = f
+    info['name'] = d
+    info['changelog'] = '/'.join(f.split('/')[:-1]) + "/CHANGES.txt"
+    fields = r.split('-')[1:]
+    for i in range(len(fields)):
+        if i == 0:
+            info['cmver'] = fields[i]
+        elif i == 1:
+            if re.match(r"\d{8}", fields[i]):
+                continue
+            elif re.match(r"RC\d+", fields[i]):
+                info['cmver'] += '-' + fields[i]
+                info['type'] = "RC"
+            else:
+                info['device'] = fields[i]
+        elif i == 2:
+            if fields[i] == "NIGHTLY" or fields[i] == "SNAPSHOT":
+                info['type'] = "Nightly"
+            elif fields[i] == "EXPERIMENTAL":
+                info['type'] = "Experimental"
+            else:
+                info['device'] = fields[i]
+        elif i == 3:
+            info['device'] = fields[i]
+        else:
+            break  # stop searching
+
+    return info
+
+
+def generate_most_recent(files, count):
     output = open(CMROOT + "index.html", "w")
     output.write(HEADER)
-    result = subprocess.check_output(r"find " + CMROOT + " -name '*.zip' -type f -printf '%T@ %p\n' | sort -k 1nr | sed -e 's/^[^ ]* //' -e 's#" + CMROOT + "##'", shell=True)
-    files = result.strip().split('\n')
+    output.write('<p class="lead">Only the most recent 60 builds are shown. See <a href="all.html">full list</a> here.</p>\n')
+    output.write(TABLE_HEADER)
+    i = 0
     for f in files:
-        info = {'cmver': '???', 'device': '???', 'type': 'Stable'}
-        r = f.split('/')[-1][:-4]
-        d = r
-        if r.endswith('-signed'):
-            r = r[:-7]
-        if r.startswith('update-'):
-            r = r[7:]
-        fields = r.split('-')[1:]
-        for i in range(len(fields)):
-            if i == 0:
-                info['cmver'] = fields[i]
-            elif i == 1:
-                if re.match(r"\d{8}", fields[i]):
-                    continue
-                elif re.match(r"RC\d+", fields[i]):
-                    info['cmver'] += '-' + fields[i]
-                    info['type'] = "RC"
-                else:
-                    info['device'] = fields[i]
-            elif i == 2:
-                if fields[i] == "NIGHTLY" or fields[i] == "SNAPSHOT":
-                    info['type'] = "Nightly"
-                elif fields[i] == "EXPERIMENTAL":
-                    info['type'] = "Experimental"
-                else:
-                    info['device'] = fields[i]
-            elif i == 3:
-                info['device'] = fields[i]
-            else:
-                break  # stop searching
-        output.write('<tr><td>%s</td><td><a href="%s">%s</a></td><td>%s</td><td>%s</td></tr>\n' % (info['type'], f, d, info['cmver'], info['device']))
+        if i > count:
+            break
+        info = parse_filename(f)
+        output.write('<tr><td>%s</td><td><a href="/cm%s">%s</a> (<a href="/cm%s">ChangeLog</a>)</td><td>%s</td><td>%s</td></tr>\n' %
+                (info['type'], info['path'], info['name'], info['changelog'], info['cmver'], info['device']))
+        i += 1
 
-    output.write(FOOTER)
+    output.write(TABLE_FOOTER + FOOTER)
+    output.close()
+
+
+def generate_directory_index(files):
+    output = open(CMROOT + "all.html", "w")
+    output.write(HEADER + TABLE_HEADER)
+    result = subprocess.check_output(r"find " + CMROOT + " -name '*.zip' -type f -printf '%T@ %p\n' | sort -k 1nr | sed -e 's/^[^ ]* //' -e 's#" + CMROOT + "##'", shell=True)
+    for f in files:
+        info = parse_filename(f)
+        output.write('<tr><td>%s</td><td><a href="/cm%s">%s</a></td><td>%s</td><td>%s</td></tr>\n' %
+                (info['type'], info['path'], info['name'], info['cmver'], info['device']))
+
+    output.write(TABLE_FOOTER + FOOTER)
     output.close()
 
 if __name__ == '__main__':
-    generate_directory_index()
+    cmd = r"find %s/jenkins %s/jenkins-test -name '*.zip' -type f -printf '%%T@ %%p\n' | sort -k 1nr | sed -e 's/^[^ ]* //' -e 's#%s##'" % (CMROOT, CMROOT, CMROOT)
+    result = subprocess.check_output(cmd, shell=True)
+    files = result.strip().split('\n')
+    generate_most_recent(files, 60)
+    generate_directory_index(files)

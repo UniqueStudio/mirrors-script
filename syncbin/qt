@@ -4,7 +4,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=qt
 _UPSTREAM=rsync://master.qt-project.org/qt-all/
-_SYNCEVERY=9600
+_SYNCEVERY=43200
 _FAILRETRY=600
 _FAILRETRIES=4
 _RSYNC_ARGS="$_RSYNC_ARGS --delete-excluded --exclude=archive/ --exclude=snapshots/ --exclude=community-releases/ --exclude=ministro/"

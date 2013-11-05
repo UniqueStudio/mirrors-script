@@ -3,8 +3,8 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=opensuse
-_UPSTREAM=rsync://opensuse.mirror.garr.it/opensuse/
+_UPSTREAM=rsync://rsync.opensuse.org/opensuse-full-with-factory/opensuse/
 _SYNCEVERY=14400
 _FAILRETRY=600
 _FAILRETRIES=4
-_RSYNC_ARGS="$_RSYNC_ARGS --exclude .timestamp_invisible"
+_RSYNC_ARGS="$_RSYNC_ARGS --exclude .timestamp_invisible --exclude ports/ --delete-excluded"

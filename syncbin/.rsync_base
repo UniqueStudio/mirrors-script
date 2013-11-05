@@ -5,7 +5,7 @@
 # The following functions and variables can be overridden in order to support
 # different syncing requirements.
 
-_RSYNC_ARGS="-aHvh --delete --delete-delay --stats --safe-links --timeout=120 --contimeout=60 --delay-updates"
+_RSYNC_ARGS="-aHvh --delete --delete-delay --stats --safe-links --timeout=120 --contimeout=120 --delay-updates"
 
 _sync () {
     mkdir -p $MIRRORROOT/$_REPO

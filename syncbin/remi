@@ -1,0 +1,38 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_REPO=remi
+_SUBREPO1=enterprise
+_SUBREPO2=fedora
+_UPSTREAM=rsync://remi.famillecollet.com
+_SYNCEVERY=28800
+_FAILRETRY=600
+_FAILRETRIES=4
+_RSYNC_ARGS="$_RSYNC_ARGS -4"
+
+_sync () {
+    mkdir -p $MIRRORROOT/$_REPO
+    cd $MIRRORROOT/$_REPO
+    if [[ $? != 0 ]]; then
+        return 1
+    fi
+    mkdir -p $_SUBREPO1 $_SUBREPO2
+    wget http://rpms.famillecollet.com/index.html -O index.html
+    rsync $_UPSTREAM/$_SUBREPO1/ $_SUBREPO1/ $_RSYNC_ARGS
+    RETVAL1=$?
+    rsync $_UPSTREAM/$_SUBREPO2/ $_SUBREPO2/ $_RSYNC_ARGS
+    RETVAL2=$?
+    if [[ $RETVAL1 != 0 ]]; then
+        RETVAL=$RETVAL1;
+    fi
+    if [[ $RETVAL2 != 0 ]]; then
+        RETVAL=$RETVAL2;
+    fi
+    cd $OWD
+    return $RETVAL
+}
+
+_get_size () {
+    cat $LOGROOT/$_REPO/log.stdout | sed -n "s/total size is \(.*\)[TKMG].*/\1/ p" | python -c 'a=raw_input();b=raw_input(); print "%0.2lfG" % (float(a)+float(b))'
+}

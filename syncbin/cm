@@ -4,9 +4,10 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=cm
 _UPSTREAM=rsync://download.cyanogenmod.org/mirror/
-_SYNCEVERY=7200
-_FAILRETRY=600
+_SYNCEVERY=9600
+_FAILRETRY=900
 _FAILRETRIES=4
+_RSYNC_ARGS="$_RSYNC_ARGS --exclude index.html --exclude all.html"
 
 _post_sync() {
     $SCRIPTROOT/cm_dir_index

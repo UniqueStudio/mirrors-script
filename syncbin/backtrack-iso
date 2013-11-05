@@ -4,6 +4,6 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=backtrack-iso
 _UPSTREAM=rsync://mirrors.rit.edu/backtrack/
-_SYNCEVERY=28800
+_SYNCEVERY=432000
 _FAILRETRY=600
 _FAILRETRIES=4

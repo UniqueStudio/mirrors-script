@@ -5,7 +5,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 _REPO=debian
 __UPSTREAM=ftp2.de.debian.org  # for use with trace
 _UPSTREAM=rsync://$__UPSTREAM/$_REPO/
-_SYNCEVERY=7200
+_SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
 

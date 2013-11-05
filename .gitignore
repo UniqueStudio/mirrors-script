@@ -2,3 +2,5 @@
 report_mirror.conf
 handle_user_requested
 rsyncd.conf
+fedora.conf
+rpmfusion.conf

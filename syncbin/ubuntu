@@ -5,7 +5,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 _REPO=ubuntu
 __UPSTREAM=archive.ubuntu.com
 _UPSTREAM=rsync://$__UPSTREAM/ubuntu/
-_SYNCEVERY=7200
+_SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
 

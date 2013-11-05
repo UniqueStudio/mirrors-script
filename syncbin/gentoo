@@ -3,8 +3,8 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=gentoo
-_UPSTREAM=rsync://rsync2.cn.gentoo.org/$_REPO/
-_SYNCEVERY=14400
+_UPSTREAM=rsync://mirrors.kernel.org/$_REPO/
+_SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
 _RSYNC_ARGS="$_RSYNC_ARGS --exclude releases/.test/THIS-FILE-SHOULD-NOT-BE-PUBLIC.txt --exclude distfiles/.~tmp~"

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_REPO=rpmfusion
+_UPSTREAM=rsync://mirror1.hs-esslingen.de/$_REPO/
+_SYNCEVERY=14400
+_FAILRETRY=600
+_FAILRETRIES=4
+
+_post_sync () {
+    $SCRIPTROOT/report_mirror -c "$SCRIPTROOT/rpmfusion.conf"
+}
