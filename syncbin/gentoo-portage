@@ -3,7 +3,7 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=gentoo-portage
-_UPSTREAM=rsync://rsync2.cn.gentoo.org/$_REPO/
+_UPSTREAM=rsync://rsync1.cn.gentoo.org/$_REPO/
 _SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
