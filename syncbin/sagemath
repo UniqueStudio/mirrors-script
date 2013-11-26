@@ -4,10 +4,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=sagemath
 _UPSTREAM=rsync://boxen.math.washington.edu/sage/
-_SYNCEVERY=120
-_FAILRETRY=120
+_SYNCEVERY=600
+_FAILRETRY=600
 _FAILRETRIES=4
-
-_UPSTREAM_HTTP=http://boxen.math.washington.edu/home/sagemath/sage-mirror
-_VERSION_FILE_REMOTE="$_UPSTREAM_HTTP/zzz/timestamp.html"
-_VERSION_FILE_LOCAL="zzz/timestamp.html"
+_TIMESTAMP_PATH="/zzz/timestamp.html"

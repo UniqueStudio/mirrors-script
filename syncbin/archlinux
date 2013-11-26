@@ -4,9 +4,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=archlinux
 _UPSTREAM=rsync://mirror.leaseweb.net/archlinux/
-_SYNCEVERY=120
-_FAILRETRY=120
+_SYNCEVERY=600
+_FAILRETRY=600
 _FAILRETRIES=4
-_UPSTREAM_HTTP=$(echo "$_UPSTREAM" | sed -e 's/^rsync/http/g')
-_VERSION_FILE_REMOTE="${_UPSTREAM_HTTP}lastsync"
-_VERSION_FILE_LOCAL="lastsync"
+_TIMESTAMP_PATH="/lastupdate"

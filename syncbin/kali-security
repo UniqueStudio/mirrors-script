@@ -8,5 +8,4 @@ _SYNCEVERY=120
 _FAILRETRY=120
 _FAILRETRIES=4
 _UPSTREAM_HTTP=http://kali.mirror.garr.it/mirrors/kali-security
-_VERSION_FILE_REMOTE="$_UPSTREAM_HTTP/project/trace/mirror3.mirror.garr.it"
-_VERSION_FILE_LOCAL="project/trace/mirror3.mirror.garr.it"
+_TIMESTAMP_PATH="/project/trace/mirror3.mirror.garr.it"
