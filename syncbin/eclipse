@@ -7,4 +7,6 @@ _UPSTREAM=rsync://rsync.gtlib.gatech.edu/eclipse/
 _SYNCEVERY=28800
 _FAILRETRY=600
 _FAILRETRIES=4
+_VERSION_FILE_REMOTE="http://www.gtlib.gatech.edu/pub/eclipse/TIME"
+_VERSION_FILE_LOCAL=TIME
 

@@ -7,4 +7,5 @@ _UPSTREAM=rsync://kali.mirror.garr.it/$_REPO/
 _SYNCEVERY=7200
 _FAILRETRY=600
 _FAILRETRIES=4
-
+_VERSION_FILE_REMOTE="http://kali.mirror.garr.it/mirrors/kali-images/kali-latest/amd64/SHA1SUMS"
+_VERSION_FILE_LOCAL=kali-latest/amd64/SHA1SUMS

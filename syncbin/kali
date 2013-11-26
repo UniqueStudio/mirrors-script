@@ -4,7 +4,9 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=kali
 _UPSTREAM=rsync://kali.mirror.garr.it/$_REPO/
-_SYNCEVERY=7200
-_FAILRETRY=600
+_SYNCEVERY=120
+_FAILRETRY=120
 _FAILRETRIES=4
-
+_UPSTREAM_HTTP=http://kali.mirror.garr.it/mirrors/kali
+_VERSION_FILE_REMOTE="$_UPSTREAM_HTTP/project/trace/mirror3.mirror.garr.it"
+_VERSION_FILE_LOCAL="project/trace/mirror3.mirror.garr.it"

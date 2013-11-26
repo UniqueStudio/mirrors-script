@@ -3,7 +3,9 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=centos
-_UPSTREAM=rsync://mirrors.kernel.org/$_REPO/
-_SYNCEVERY=28800
-_FAILRETRY=600
+_UPSTREAM=rsync://us-msync.centos.org/CentOS/
+_SYNCEVERY=120
+_FAILRETRY=120
 _FAILRETRIES=4
+_VERSION_FILE_REMOTE="http://us-msync.centos.org/timestamp.txt"
+_VERSION_FILE_LOCAL="timestamp.txt"

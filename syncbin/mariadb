@@ -4,7 +4,10 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=mariadb
 _UPSTREAM=rsync://rsync.osuosl.org/$_REPO/
-_SYNCEVERY=43200
-_FAILRETRY=600
+_SYNCEVERY=120
+_FAILRETRY=120
 _FAILRETRIES=4
 _RSYNC_ARGS="$_RSYNC_ARGS --partial"
+_UPSTREAM_HTTP=http://rsync.osuosl.org/pub/mariadb
+_VERSION_FILE_REMOTE="$_UPSTREAM_HTTP/TIME"
+_VERSION_FILE_LOCAL="TIME"

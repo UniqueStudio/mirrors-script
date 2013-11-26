@@ -13,6 +13,19 @@ _sync () {
     if [[ $? != 0 ]]; then
         return 1
     fi
+    if [[ -n "$_VERSION_FILE_REMOTE" ]]; then
+        if [[ -n "$_VERSION_FILE_LOCAL" ]]; then
+            _VERSION_FILE_REMOTE_TEMP=$( mktemp "/tmp/${_REPO}.XXXXX" )
+            curl -s $_VERSION_FILE_REMOTE -o "$_VERSION_FILE_REMOTE_TEMP"
+            if cmp -s "$_VERSION_FILE_LOCAL" "$_VERSION_FILE_REMOTE_TEMP"; then
+                echo "Remote timestamp is the same as local timestamp."
+                echo "No actual sync will be performed."
+                rm $_VERSION_FILE_REMOTE_TEMP
+                return 0
+            fi
+            rm $_VERSION_FILE_REMOTE_TEMP
+        fi
+    fi
     rsync $_UPSTREAM . $_RSYNC_ARGS
     RETVAL=$?
     cd $OWD
@@ -35,7 +48,9 @@ _upstream_inconsistent () {
 _get_next_sync_time () {
     _CURTIME=$(date +%s)
     _DELTA=$_SYNCEVERY
-    _DELTA=$( echo $((_DELTA + RANDOM % 5400 - 3600)) 1800 | xargs python -c 'import sys;print max(int(sys.argv[1]), int(sys.argv[2]))' )
+    if [ "$_DELTA" -ge "1800" ]; then
+        _DELTA=$( echo $((_DELTA + RANDOM % 5400 - 3600)) 1800 | xargs python -c 'import sys;print max(int(sys.argv[1]), int(sys.argv[2]))' )
+    fi
     if _upstream_inconsistent &>/dev/null; then
         _DELTA=$_FAILRETRY
     fi
@@ -58,5 +73,9 @@ _get_next_sync_time () {
 
 _get_size () {
     _STDOUT=$LOGROOT/$_REPO/log.stdout
-    tail -n1 $_STDOUT | cut -d' ' -f4
+    if grep "No actual sync will be performed" $_STDOUT >/dev/null; then
+        echo "$SIZE"
+    else
+        tail -n1 $_STDOUT | cut -d' ' -f4
+    fi
 }
