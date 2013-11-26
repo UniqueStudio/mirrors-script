@@ -70,7 +70,6 @@ UPSTREAM=$(_get_upstream)
 
 python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status syncing lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 
-
 if [[ ! -d "$LOGROOT/$1" ]]; then
     mkdir -p "$LOGROOT/$1"
 fi
