@@ -28,6 +28,11 @@ while true; do
     done
     mv "$LOGROOT/$1/sync_core.log" "$LOGROOT/$1/sync_core.log.0"
     bash -x ./sync_core $1 >& "$LOGROOT/$1/sync_core.log"
+    if [[ $? != 0 ]]; then
+        echo "($1) CORE CORRUPTION DETECTED!!! SLEEPING 60 SECONDS..."
+        sleep 60
+        continue
+    fi
     NEXTSYNC=$(cat "$STATUSROOT/$1.json" | python -c 'import json;p=json.loads(raw_input());print "nextsync" in p and p["nextsync"] or -1')
     NOW=`date +%s`
     SLEEPTIME=$((NEXTSYNC-NOW))
