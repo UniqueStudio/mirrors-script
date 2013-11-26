@@ -4,7 +4,7 @@ SERVERNAME=$( hostname --fqdn ) # added a space before `)' to fix vim syntax hig
 
 function kvdb_global_get_file_name() {
     DBF="$KVDBROOT/global.kc"
-    if [ ! -f "$DBF" ]; then
+    if [[ ! -f "$DBF" ]]; then
         kchashmgr create "$DBF" 2>/dev/null
     fi
     echo "$DBF"
@@ -12,7 +12,7 @@ function kvdb_global_get_file_name() {
 
 function kvdb_local_get_file_name() {
     DBF="$KVDBROOT/local.$DISTRO.kc"
-    if [ ! -f "DBF" ]; then
+    if [[ ! -f "$DBF" ]]; then
         kchashmgr create "$DBF" 2>/dev/null
     fi
     echo "$DBF"
@@ -71,7 +71,7 @@ UPSTREAM=$(_get_upstream)
 python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status syncing lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 
 
-if [ ! -d "$LOGROOT/$1" ]; then
+if [[ ! -d "$LOGROOT/$1" ]]; then
     mkdir -p "$LOGROOT/$1"
 fi
 
@@ -94,7 +94,7 @@ RETVAL=$?
 
 if [[ $RETVAL == 0 || $RETVAL == 23 ]]; then
     LASTSTATUS=success
-    if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
+    if [[ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]]; then
         rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
     fi
     SIZE=$(_get_size)
@@ -104,15 +104,15 @@ if [[ $RETVAL == 0 || $RETVAL == 23 ]]; then
     _post_sync > >(tee -a "$LOGROOT/$1/log.outerr" >> "$LOGROOT/$1/log.stdout" ) 2> >(tee -a "$LOGROOT/$1/log.outerr" >> "$LOGROOT/$1/log.stderr")
 elif [[ $RETVAL == 5 ]]; then
     LASTSTATUS=failed
-    if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
-    	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
+    if [[ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]]; then
+        rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
     fi
     NEXTSYNC=$(_get_next_sync_time)
     python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status success lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
 else
     LASTSTATUS=failed
-    if [ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]; then
-    	rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
+    if [[ -f "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}" ]]; then
+        rm "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}"
     fi
     NEXTSYNC=$(_get_next_sync_time)
     python -c "$GenJSON" upstream "$UPSTREAM" size "$SIZE" status failed lastsync "$LASTSYNC" nextsync "$NEXTSYNC" name $1 > "$STATUSROOT/$1.json" 2>/dev/null
