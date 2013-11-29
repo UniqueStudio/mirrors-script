@@ -7,4 +7,4 @@ _UPSTREAM=rsync://mirror.leaseweb.net/archlinux/
 _SYNCEVERY=600
 _FAILRETRY=600
 _FAILRETRIES=4
-_TIMESTAMP_PATH="/lastupdate"
+_TIMESTAMP_PATHS="/lastupdate"

@@ -8,4 +8,4 @@ _SYNCEVERY=600
 _FAILRETRY=600
 _FAILRETRIES=4
 _UPSTREAM_HTTP=http://kali.mirror.garr.it/mirrors/kali
-_TIMESTAMP_PATH="/project/trace/mirror3.mirror.garr.it"
+_TIMESTAMP_PATHS="/project/trace/mirror3.mirror.garr.it"

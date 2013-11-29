@@ -4,7 +4,7 @@ source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=archlinuxarm
 _UPSTREAM=rsync://ftp2.de.debian.org/archlinux-arm/
-_SYNCEVERY=7200
+_SYNCEVERY=600
 _FAILRETRY=600
 _FAILRETRIES=4
-
+_TIMESTAMP_PATHS="/os/sync,/armv7h/sync,/armv6h/sync,/arm/sync"

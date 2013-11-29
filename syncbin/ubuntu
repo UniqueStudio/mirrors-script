@@ -5,13 +5,19 @@ source $SCRIPTROOT/syncbin/.rsync_base
 _REPO=ubuntu
 __UPSTREAM=archive.ubuntu.com
 _UPSTREAM=rsync://$__UPSTREAM/ubuntu/
-_SYNCEVERY=28800
+_SYNCEVERY=600
 _FAILRETRY=600
 _FAILRETRIES=4
+_TIMESTAMP_PATHS="/ls-lR.gz"
 
 _sync () {
     mkdir -p $MIRRORROOT/$_REPO
     cd $MIRRORROOT/$_REPO
+    if _check_updated; then
+        echo "Remote timestamp is the same as local timestamp."
+        echo "No actual sync will be performed."
+        return 0
+    fi
     rsync $_UPSTREAM . -aHvh --exclude Packages* --exclude Sources* --exclude Release* --exclude InRelease --exclude i18n/* --exclude ls-lR* --links --safe-links --stats --hard-links --delay-updates
     RETVAL=$?
     if [ "$RETVAL" -eq "0" ]; then

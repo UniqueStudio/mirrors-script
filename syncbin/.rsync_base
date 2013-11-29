@@ -7,22 +7,41 @@
 
 _RSYNC_ARGS="-aHvh --delete --delete-delay --stats --safe-links --timeout=120 --contimeout=120 --delay-updates"
 
+_check_updated() {
+    set +x
+    if [[ -n "$_TIMESTAMP_PATHS" ]]; then
+        __TIMESTAMP_PATHS=$( echo "$_TIMESTAMP_PATHS" | tr ',' '\n' )
+        __PATHS_COUNT=$( echo "$__TIMESTAMP_PATHS" | wc -l )
+        for ((i=1;i<=$__PATHS_COUNT;i++)); do
+            _TIMESTAMP_PATH=$( echo "$__TIMESTAMP_PATHS" | sed -n "${i}p" )
+            if [[ -n "$_TIMESTAMP_PATH" ]]; then
+                _TIMESTAMP_TEMP=$( mktemp "/tmp/${_REPO}.XXXXX" )
+                rsync -q --no-motd "${_UPSTREAM%\/}/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"
+                if cmp -s "$MIRRORROOT/$_REPO/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"; then
+                    echo "${_TIMESTAMP_PATH} is the same"
+                else
+                    echo "${_TIMESTAMP_PATH} is different"
+                    rm $_TIMESTAMP_TEMP
+                    set -x; return 1
+                fi
+                rm $_TIMESTAMP_TEMP
+            fi
+        done
+        set -x; return 0
+    fi
+    set -x; return 1
+}
+
 _sync () {
     mkdir -p $MIRRORROOT/$_REPO
     cd $MIRRORROOT/$_REPO
     if [[ $? != 0 ]]; then
         return 1
     fi
-    if [[ -n "$_TIMESTAMP_PATH" ]]; then
-        _TIMESTAMP_TEMP=$( mktemp "/tmp/${_REPO}.XXXXX" )
-        rsync -q --no-motd "${_UPSTREAM%\/}/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"
-        if cmp -s "$MIRRORROOT/$_REPO/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"; then
-            echo "Remote timestamp is the same as local timestamp."
-            echo "No actual sync will be performed."
-            rm $_TIMESTAMP_TEMP
-            return 0
-        fi
-        rm $_TIMESTAMP_TEMP
+    if _check_updated; then
+        echo "Remote timestamp is the same as local timestamp."
+        echo "No actual sync will be performed."
+        return 0
     fi
     rsync $_UPSTREAM . $_RSYNC_ARGS
     RETVAL=$?

@@ -7,4 +7,4 @@ _UPSTREAM=rsync://boxen.math.washington.edu/sage/
 _SYNCEVERY=600
 _FAILRETRY=600
 _FAILRETRIES=4
-_TIMESTAMP_PATH="/zzz/timestamp.html"
+_TIMESTAMP_PATHS="/zzz/timestamp.html"
