@@ -3,8 +3,9 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=gentoo
-_UPSTREAM=rsync://mirrors.kernel.org/$_REPO/
-_SYNCEVERY=28800
+_UPSTREAM=rsync://rsync1.cn.gentoo.org/$_REPO/
+_SYNCEVERY=600
 _FAILRETRY=600
 _FAILRETRIES=4
 _RSYNC_ARGS="$_RSYNC_ARGS --exclude releases/.test/THIS-FILE-SHOULD-NOT-BE-PUBLIC.txt --exclude distfiles/.~tmp~"
+_TIMESTAMP_PATHS="/distfiles/timestamp.chk,/experimental/timestamp.chk,/snapshots/portage-latest.tar.bz2.md5sum,/snapshots/portage-latest.tar.xz.md5sum,/releases/.timestamp-releases.x"

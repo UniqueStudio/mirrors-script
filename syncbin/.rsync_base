@@ -15,12 +15,17 @@ _check_updated() {
         for ((i=1;i<=$__PATHS_COUNT;i++)); do
             _TIMESTAMP_PATH=$( echo "$__TIMESTAMP_PATHS" | sed -n "${i}p" )
             if [[ -n "$_TIMESTAMP_PATH" ]]; then
+                _TIMESTAMP_PATH_LOCAL=$(echo "$_TIMESTAMP_PATH" | cut -d= -f2)
+                _TIMESTAMP_PATH=$(echo "$_TIMESTAMP_PATH" | cut -d= -f1)
+                if [[ -z "$_TIMESTAMP_PATH_LOCAL" ]]; then
+                    _TIMESTAMP_PATH_LOCAL="$_TIMESTAMP_PATH"
+                fi
                 _TIMESTAMP_TEMP=$( mktemp "/tmp/${_REPO}.XXXXX" )
-                rsync -q --no-motd "${_UPSTREAM%\/}/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"
-                if cmp -s "$MIRRORROOT/$_REPO/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"; then
-                    echo "${_TIMESTAMP_PATH} is the same"
+                rsync -q --timeout=20 --contimeout=20 --no-motd "${_UPSTREAM%\/}/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"
+                if cmp -s "$MIRRORROOT/$_REPO/${_TIMESTAMP_PATH_LOCAL#\/}" "$_TIMESTAMP_TEMP"; then
+                    echo "Remote ${_TIMESTAMP_PATH} is the same as local ${_TIMESTAMP_PATH_LOCAL}"
                 else
-                    echo "${_TIMESTAMP_PATH} is different"
+                    echo "Remote ${_TIMESTAMP_PATH} is different from local ${_TIMESTAMP_PATH_LOCAL}"
                     rm $_TIMESTAMP_TEMP
                     set -x; return 1
                 fi

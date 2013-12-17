@@ -7,4 +7,3 @@ _UPSTREAM=rsync://cdimage.linuxdeepin.com/cdimage/
 _SYNCEVERY=7200
 _FAILRETRY=600
 _FAILRETRIES=3
-
