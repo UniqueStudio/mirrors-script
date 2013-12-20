@@ -22,12 +22,13 @@ if [[ "$NEXT" -ge "$NOW" ]]; then
 fi
 
 while true; do
-    for ((i=13;i>=0;i--)); do 
-        j=$((i+1))
-        mv "$LOGROOT/$1/sync_core.log.$i" "$LOGROOT/$1/sync_core.log.$j"
-    done
-    mv "$LOGROOT/$1/sync_core.log" "$LOGROOT/$1/sync_core.log.0"
-    bash -x ./sync_core $1 >& "$LOGROOT/$1/sync_core.log"
+#    for ((i=13;i>=0;i--)); do 
+#        j=$((i+1))
+#        mv "$LOGROOT/$1/sync_core.log.$i" "$LOGROOT/$1/sync_core.log.$j"
+#    done
+#    mv "$LOGROOT/$1/sync_core.log" "$LOGROOT/$1/sync_core.log.0"
+#    bash -x ./sync_core $1 >& "$LOGROOT/$1/sync_core.log"
+    bash -x ./sync_core $1 2>&1
     if [[ $? != 0 ]]; then
         echo "($1) CORE CORRUPTION DETECTED!!! SLEEPING 60 SECONDS..."
         sleep 60
