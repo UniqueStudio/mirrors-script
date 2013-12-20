@@ -12,7 +12,7 @@ _check_updated() {
     if [[ -n "$_TIMESTAMP_PATHS" ]]; then
         __TIMESTAMP_PATHS=$( echo "$_TIMESTAMP_PATHS" | tr ',' '\n' )
         __PATHS_COUNT=$( echo "$__TIMESTAMP_PATHS" | wc -l )
-        for ((i=1;i<=$__PATHS_COUNT;i++)); do
+        for ((i=1; i<=$__PATHS_COUNT; i++)); do
             _TIMESTAMP_PATH=$( echo "$__TIMESTAMP_PATHS" | sed -n "${i}p" )
             if [[ -n "$_TIMESTAMP_PATH" ]]; then
                 _TIMESTAMP_PATH_LOCAL=$(echo "$_TIMESTAMP_PATH" | cut -d= -f2)
@@ -22,6 +22,12 @@ _check_updated() {
                 fi
                 _TIMESTAMP_TEMP=$( mktemp "/tmp/${_REPO}.XXXXX" )
                 rsync -q --timeout=20 --contimeout=20 --no-motd "${_UPSTREAM%\/}/${_TIMESTAMP_PATH#\/}" "$_TIMESTAMP_TEMP"
+                local RETVAL=$?
+                if [[ "$RETVAL" != "0" ]]; then
+                    echo "Errors occurred ($RETVAL) while checking timestamp"
+                    rm $_TIMESTAMP_TEMP
+                    set -x; return 1
+                fi
                 if cmp -s "$MIRRORROOT/$_REPO/${_TIMESTAMP_PATH_LOCAL#\/}" "$_TIMESTAMP_TEMP"; then
                     echo "Remote ${_TIMESTAMP_PATH} is the same as local ${_TIMESTAMP_PATH_LOCAL}"
                 else
@@ -38,6 +44,7 @@ _check_updated() {
 }
 
 _sync () {
+    set +x
     mkdir -p $MIRRORROOT/$_REPO
     cd $MIRRORROOT/$_REPO
     if [[ $? != 0 ]]; then
@@ -46,8 +53,10 @@ _sync () {
     if _check_updated; then
         echo "Remote timestamp is the same as local timestamp."
         echo "No actual sync will be performed."
+        _SAVELOG=0
         return 0
     fi
+    set -x
     rsync $_UPSTREAM . $_RSYNC_ARGS
     RETVAL=$?
     cd $OWD

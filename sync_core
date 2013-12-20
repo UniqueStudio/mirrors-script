@@ -74,22 +74,31 @@ if [[ ! -d "$LOGROOT/$1" ]]; then
     mkdir -p "$LOGROOT/$1"
 fi
 
-for ((i=13; i>=0; i--)); do
-    j=$((i+1))
-    mv "$LOGROOT/$1/log.stdout.$i" "$LOGROOT/$1/log.stdout.$j" 2>/dev/null
-    mv "$LOGROOT/$1/log.stderr.$i" "$LOGROOT/$1/log.stderr.$j" 2>/dev/null
-    mv "$LOGROOT/$1/log.outerr.$i" "$LOGROOT/$1/log.outerr.$j" 2>/dev/null
-done
-mv "$LOGROOT/$1/log.stdout" "$LOGROOT/$1/log.stdout.0"
-mv "$LOGROOT/$1/log.stderr" "$LOGROOT/$1/log.stderr.0"
-mv "$LOGROOT/$1/log.outerr" "$LOGROOT/$1/log.outerr.0"
+logrotate() {
+    for ((i=13; i>=0; i--)); do
+        j=$((i+1))
+        mv "$LOGROOT/$1/log.stdout.$i" "$LOGROOT/$1/log.stdout.$j" 2>/dev/null
+        mv "$LOGROOT/$1/log.stderr.$i" "$LOGROOT/$1/log.stderr.$j" 2>/dev/null
+        mv "$LOGROOT/$1/log.outerr.$i" "$LOGROOT/$1/log.outerr.$j" 2>/dev/null
+    done
+    cp "$LOGROOT/$1/log.stdout" "$LOGROOT/$1/log.stdout.0"
+    cp "$LOGROOT/$1/log.stderr" "$LOGROOT/$1/log.stderr.0"
+    cp "$LOGROOT/$1/log.outerr" "$LOGROOT/$1/log.outerr.0"
+}
 
+rm -f "$LOGROOT/$1/log.stdout"
+rm -f "$LOGROOT/$1/log.stderr"
+rm -f "$LOGROOT/$1/log.outerr"
 
 date -u > "$MIRRORROOT/$1/Archive-Update-in-Progress-${SERVERNAME}";
 
+_SAVELOG=1
 _sync > >(tee -a "$LOGROOT/$1/log.outerr" > "$LOGROOT/$1/log.stdout") 2> >(tee -a "$LOGROOT/$1/log.outerr" > "$LOGROOT/$1/log.stderr")
-
 RETVAL=$?
+
+if [[ "$_SAVELOG" == "1" ]]; then
+    logrotate "$1";
+fi
 
 if [[ $RETVAL == 0 || $RETVAL == 23 ]]; then
     LASTSTATUS=success
