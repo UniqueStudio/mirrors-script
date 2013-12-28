@@ -10,6 +10,7 @@ _RSYNC_ARGS="-aHvh --delete --delete-delay --stats --safe-links --timeout=120 --
 _check_updated() {
     set +x
     if [[ -n "$_TIMESTAMP_PATHS" ]]; then
+        echo "Checking timestamps..."
         __TIMESTAMP_PATHS=$( echo "$_TIMESTAMP_PATHS" | tr ',' '\n' )
         __PATHS_COUNT=$( echo "$__TIMESTAMP_PATHS" | wc -l )
         for ((i=1; i<=$__PATHS_COUNT; i++)); do
