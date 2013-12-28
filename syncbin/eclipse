@@ -3,7 +3,7 @@
 source $SCRIPTROOT/syncbin/.rsync_base
 
 _REPO=eclipse
-_UPSTREAM=rsync://rsync.gtlib.gatech.edu/eclipse/
+_UPSTREAM=rsync://rsync.osuosl.org/eclipse/
 _SYNCEVERY=600
 _FAILRETRY=600
 _FAILRETRIES=4
