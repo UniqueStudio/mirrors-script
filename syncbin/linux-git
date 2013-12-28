@@ -1,0 +1,36 @@
+#!/bin/bash
+
+source $SCRIPTROOT/syncbin/.rsync_base
+
+_REPO=linux-git
+__REPO=linux.git
+_UPSTREAM=https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git
+_SYNCEVERY=600
+_FAILRETRY=600
+_FAILRETRIES=4
+
+_sync () {
+    mkdir -p $MIRRORROOT/$__REPO
+    cd $MIRRORROOT/$__REPO
+    git remote -v update
+    RETVAL=$?
+    cd $OWD
+    return $RETVAL
+}
+
+_get_size() {
+    OLD=$(kvdb_local_get last_du_time)
+    if [ "0$OLD" -eq "0" ]; then
+        OLD=0
+    fi
+    NOW=`date +%s`
+    let P=NOW-OLD
+    if [ "$P" -lt "86400" ]; then
+        kvdb_local_get last_du_value
+    else
+        NSIZE=`du "$MIRRORROOT/$__REPO/" -sh | awk '{ print $1; }'`
+        kvdb_local_set last_du_value "$NSIZE"
+        kvdb_local_set last_du_time "$NOW"
+        echo "$NSIZE"
+    fi
+}
