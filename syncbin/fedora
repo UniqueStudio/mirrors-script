@@ -11,7 +11,7 @@ _TIMESTAMP_PATHS="/../fullfilelist=/fullfilelist"
 
 _post_sync () {
     cd $MIRRORROOT/$_REPO
-    rsync "$_UPSTREAM/../fullfilelist" .
+    rsync "${_UPSTREAM}../fullfilelist" .
     $SCRIPTROOT/report_mirror -c "$SCRIPTROOT/fedora.conf"
     cd -
 }
